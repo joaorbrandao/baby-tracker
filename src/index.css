@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Google Fonts are loaded via index.html ── */
+
+/* ── Light theme (default) ── */
+:root {
+  --bg:           #fdf4ff;
+  --surface:      #ffffff;
+  --text:         #1e1b4b;
+  --accent:       #7c3aed;
+  --chart-grid:   #e9d5ff;
+  --chart-axis:   #a78bfa;
+  --tooltip-bg:   #ffffff;
+  --tooltip-text: #1e1b4b;
+}
+
+/* ── Dark theme ── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:           #0f0a1e;
+    --surface:      #1a1040;
+    --text:         #ede9fe;
+    --accent:       #a78bfa;
+    --chart-grid:   #2d1b69;
+    --chart-axis:   #7c3aed;
+    --tooltip-bg:   #1e1b4b;
+    --tooltip-text: #ede9fe;
+  }
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Lato', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Smooth transitions for theme */
+*, *::before, *::after {
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
