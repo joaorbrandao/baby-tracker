@@ -65,7 +65,7 @@ export default function CsvUpload({ onData }) {
         <input
           ref={inputRef}
           type="file"
-          accept=".csv, .txt, .md"
+          accept={FILE_EXTENSIONS.join(',')}
           className="sr-only"
           onChange={onInputChange}
         />
@@ -73,13 +73,19 @@ export default function CsvUpload({ onData }) {
         <div className="flex flex-col items-center gap-3">
           <span className="text-5xl select-none" aria-hidden>📋</span>
           <p className="font-serif text-lg font-semibold text-violet-900 dark:text-violet-200">
-            Upload your tracking CSV
+            Upload your tracking file
           </p>
           <p className="text-sm text-violet-600 dark:text-violet-400">
-            Drag &amp; drop or tap to browse
+            Valid file extensions: {FILE_EXTENSIONS.join('/')}
           </p>
           <p className="text-xs text-violet-400 dark:text-violet-600 font-mono">
-            Example: <span className="font-semibold">type, date_time</span>
+            Example of file content:<br />
+            <p className="mt-1 text-xs text-violet-400 dark:text-violet-600 font-mono">
+              <span className="font-semibold">type,date_time</span><br />
+              <span className="font-semibold">baby-kick,2026-04-27 14:30:00</span><br />
+              <span className="font-semibold">contraction-start,2026-04-27 15:30:00</span><br />
+              <span className="font-semibold">contraction-end,2026-04-27 15:30:00</span>
+            </p>
           </p>
         </div>
       </div>

@@ -13,7 +13,7 @@ export default function App() {
           Baby Tracker
         </h1>
         <p className="text-sm text-violet-500 dark:text-violet-400 mt-1">
-          Kicks &amp; contractions dashboard
+          Kicks &amp; Contractions dashboard
         </p>
       </header>
 
@@ -24,12 +24,19 @@ export default function App() {
       {events && (
         <div className="mt-8">
           <Dashboard events={events} />
+
+          <div className="mt-8 text-center text-violet-300 dark:text-violet-700 text-sm select-none">
+            Upload a file to see your dashboard ✨<br />
+            🔒 No data collection! 💜
+          </div>
         </div>
+        
       )}
 
       {!events && (
         <div className="mt-16 text-center text-violet-300 dark:text-violet-700 text-sm select-none">
-          Upload a CSV to see your dashboard ✨
+          Upload a file to see your dashboard ✨<br />
+          🔒 No data collection! 💜
         </div>
       )}
     </div>
