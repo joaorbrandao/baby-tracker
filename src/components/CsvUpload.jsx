@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react'
 import { parseCsv } from '../utils/csvParser'
 
+const FILE_EXTENSIONS = ['.csv', '.txt', '.md']
+
 export default function CsvUpload({ onData }) {
   const inputRef = useRef(null)
   const [dragging, setDragging] = useState(false)
@@ -9,8 +11,8 @@ export default function CsvUpload({ onData }) {
 
   async function handleFile(file) {
     if (!file) return
-    if (!file.name.endsWith('.csv')) {
-      setStatus({ type: 'error', message: 'Please upload a .csv file.' })
+    if (!FILE_EXTENSIONS.some(ext => file.name.endsWith(ext))) {
+      setStatus({ type: 'error', message: `Please upload a file with one of the following extensions: ${FILE_EXTENSIONS.join(', ')}` })
       return
     }
     setStatus(null)
@@ -63,7 +65,7 @@ export default function CsvUpload({ onData }) {
         <input
           ref={inputRef}
           type="file"
-          accept=".csv"
+          accept=".csv, .txt, .md"
           className="sr-only"
           onChange={onInputChange}
         />
@@ -77,7 +79,7 @@ export default function CsvUpload({ onData }) {
             Drag &amp; drop or tap to browse
           </p>
           <p className="text-xs text-violet-400 dark:text-violet-600 font-mono">
-            Expected columns: <span className="font-semibold">type, date_time</span>
+            Example: <span className="font-semibold">type, date_time</span>
           </p>
         </div>
       </div>
