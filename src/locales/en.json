@@ -1,0 +1,63 @@
+{
+  "app": {
+    "title": "Baby Tracker",
+    "subtitle": "Kicks & contractions dashboard",
+    "uploadHint": "Upload a file to see your dashboard ✨",
+    "privacyNote": "🔒 No data collection! 💜"
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "pt": "Português"
+  },
+  "upload": {
+    "title": "Upload your tracking file",
+    "extensionsHint": "Valid file extensions: {{extensions}}",
+    "exampleLabel": "Example of file content:",
+    "ariaLabel": "Upload CSV file",
+    "loaded": "Loaded {{count}} events — {{kicks}} kicks, {{contractions}} contractions.",
+    "errorBadExtension": "Please upload a file with one of the following extensions: {{extensions}}",
+    "errorNoEvents": "No valid events found in the file.",
+    "warningsToggle_one": "{{count}} row skipped — click to see details",
+    "warningsToggle_other": "{{count}} rows skipped — click to see details"
+  },
+  "tabs": {
+    "kicks": "👶 Baby Kicks",
+    "contractions": "🤰 Contractions"
+  },
+  "kicks": {
+    "totalKicks": "Total kicks",
+    "avgPerDay": "Avg per day",
+    "peakHour": "Peak hour",
+    "dailyChart": "Daily Kick Count",
+    "byHourChart": "Kicks by Hour of Day",
+    "byPeriodChart": "Kicks by Time of Day",
+    "intervalChart": "Interval Between Kicks (minutes)",
+    "minutesUnit": "{{value}} min"
+  },
+  "contractions": {
+    "empty": "No contractions found in this CSV.",
+    "total": "Total",
+    "avgDuration": "Avg duration",
+    "avgInterval": "Avg interval",
+    "dailyChart": "Daily Contraction Count",
+    "durationChart": "Duration per Contraction",
+    "durationLabel": "Duration",
+    "durationFootnote": "45s threshold for 5-1-1 rule shown as reference",
+    "intervalChart": "Interval Between Contractions (minutes)",
+    "minutesUnit": "{{value}} min"
+  },
+  "periods": {
+    "Night": "Night",
+    "Morning": "Morning",
+    "Afternoon": "Afternoon",
+    "Evening": "Evening"
+  },
+  "alert": {
+    "triggered": "5-1-1 Rule Triggered",
+    "triggeredDetail": "{{count}} contractions detected within a 1-hour window starting <strong>{{when}}</strong>, each lasting ≥45s with ≤5 min between them.",
+    "triggeredCta": "Consider contacting your healthcare provider.",
+    "safe": "5-1-1 Rule — Not Yet Triggered",
+    "safeDetail": "No period detected with 5+ contractions/hour, each ≥45s, spaced ≤5 min apart."
+  }
+}

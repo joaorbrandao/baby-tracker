@@ -22,7 +22,8 @@ function periodOf(hour) {
 /**
  * @param {Array<{type: string, datetime: Date}>} events
  */
-export function processKicks(events) {
+export function processKicks(events, locale = undefined) {
+  const fmtOpts = locale ? { locale } : undefined
   const kicks = events.filter(e => e.type === 'baby-kick')
 
   // Daily counts
@@ -67,7 +68,7 @@ export function processKicks(events) {
     if (mins < 1440) { // ignore gaps > 24h (different sessions)
       intervals.push({
         index: i,
-        label: format(kicks[i].datetime, 'MMM d HH:mm'),
+        label: format(kicks[i].datetime, 'MMM d HH:mm', fmtOpts),
         minutes: mins,
       })
     }
@@ -82,7 +83,8 @@ export function processKicks(events) {
  * Pairs contraction-start with the next contraction-end.
  * Returns paired contractions with duration + interval.
  */
-export function processContractions(events) {
+export function processContractions(events, locale = undefined) {
+  const fmtOpts = locale ? { locale } : undefined
   const starts = events.filter(e => e.type === 'contraction-start')
   const ends = events.filter(e => e.type === 'contraction-end')
 
@@ -112,7 +114,7 @@ export function processContractions(events) {
     } else {
       c.intervalMin = differenceInMinutes(c.start, paired[i - 1].start)
     }
-    c.label = format(c.start, 'MMM d HH:mm')
+    c.label = format(c.start, 'MMM d HH:mm', fmtOpts)
     c.date = dateKey(c.start)
     c.durationLabel = formatDuration(c.durationSec)
   })
@@ -127,7 +129,7 @@ export function processContractions(events) {
     .map(([date, count]) => ({ date, count }))
 
   // 5-1-1 rule: in any 60-min window, ≥5 contractions, each ≥45s, intervals ≤5 min
-  const fiveOneOne = detect511(paired)
+  const fiveOneOne = detect511(paired, fmtOpts)
 
   return { contractions: paired, dailyCounts, fiveOneOne }
 }
@@ -141,7 +143,7 @@ function formatDuration(sec) {
  * Detect 5-1-1 rule: any window of 1 hour containing ≥5 contractions
  * where each is ≥45s long and intervals between them are ≤5 min.
  */
-function detect511(contractions) {
+function detect511(contractions, fmtOpts = undefined) {
   for (let i = 0; i < contractions.length; i++) {
     const windowStart = contractions[i].start
     const windowEnd = new Date(windowStart.getTime() + 60 * 60 * 1000)
@@ -161,7 +163,7 @@ function detect511(contractions) {
     return {
       triggered: true,
       at: inWindow[0].start,
-      label: format(inWindow[0].start, 'MMM d, yyyy HH:mm'),
+      label: format(inWindow[0].start, 'MMM d, yyyy HH:mm', fmtOpts),
       count: inWindow.length,
     }
   }

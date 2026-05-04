@@ -1,20 +1,22 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import KicksDashboard from './KicksDashboard'
 import ContractionsDashboard from './ContractionsDashboard'
 
-const TABS = [
-  { id: 'kicks', label: '👶 Baby Kicks' },
-  { id: 'contractions', label: '🤰 Contractions' },
-]
-
 export default function Dashboard({ events }) {
   const [active, setActive] = useState('kicks')
+  const { t } = useTranslation()
+
+  const tabs = [
+    { id: 'kicks', label: t('tabs.kicks') },
+    { id: 'contractions', label: t('tabs.contractions') },
+  ]
 
   return (
     <section className="w-full max-w-2xl mx-auto px-4 pb-12">
       {/* Tab bar */}
       <div className="flex rounded-2xl bg-violet-100 dark:bg-white/5 p-1 mb-6 gap-1">
-        {TABS.map(tab => (
+        {tabs.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActive(tab.id)}

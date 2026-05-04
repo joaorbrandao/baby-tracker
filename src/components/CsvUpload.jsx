@@ -1,10 +1,12 @@
 import { useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { parseCsv } from '../utils/csvParser'
 
 const FILE_EXTENSIONS = ['.csv', '.txt', '.md']
 
 export default function CsvUpload({ onData }) {
   const inputRef = useRef(null)
+  const { t } = useTranslation()
   const [dragging, setDragging] = useState(false)
   const [status, setStatus] = useState(null) // { type: 'success'|'error'|'warning', message }
   const [warnings, setWarnings] = useState([])
@@ -12,7 +14,10 @@ export default function CsvUpload({ onData }) {
   async function handleFile(file) {
     if (!file) return
     if (!FILE_EXTENSIONS.some(ext => file.name.endsWith(ext))) {
-      setStatus({ type: 'error', message: `Please upload a file with one of the following extensions: ${FILE_EXTENSIONS.join(', ')}` })
+      setStatus({
+        type: 'error',
+        message: t('upload.errorBadExtension', { extensions: FILE_EXTENSIONS.join(', ') }),
+      })
       return
     }
     setStatus(null)
@@ -21,14 +26,18 @@ export default function CsvUpload({ onData }) {
       const { events, warnings: w } = await parseCsv(file)
       setWarnings(w)
       if (events.length === 0) {
-        setStatus({ type: 'error', message: 'No valid events found in the file.' })
+        setStatus({ type: 'error', message: t('upload.errorNoEvents') })
         return
       }
       const kickCount = events.filter(e => e.type === 'baby-kick').length
       const contractionCount = events.filter(e => e.type === 'contraction-start').length
       setStatus({
         type: w.length > 0 ? 'warning' : 'success',
-        message: `Loaded ${events.length} events — ${kickCount} kicks, ${contractionCount} contractions.`,
+        message: t('upload.loaded', {
+          count: events.length,
+          kicks: kickCount,
+          contractions: contractionCount,
+        }),
       })
       onData(events)
     } catch (err) {
@@ -60,7 +69,7 @@ export default function CsvUpload({ onData }) {
         onDrop={onDrop}
         onClick={() => inputRef.current?.click()}
         role="button"
-        aria-label="Upload CSV file"
+        aria-label={t('upload.ariaLabel')}
       >
         <input
           ref={inputRef}
@@ -73,20 +82,20 @@ export default function CsvUpload({ onData }) {
         <div className="flex flex-col items-center gap-3">
           <span className="text-5xl select-none" aria-hidden>📋</span>
           <p className="font-serif text-lg font-semibold text-violet-900 dark:text-violet-200">
-            Upload your tracking file
+            {t('upload.title')}
           </p>
           <p className="text-sm text-violet-600 dark:text-violet-400">
-            Valid file extensions: {FILE_EXTENSIONS.join('/')}
+            {t('upload.extensionsHint', { extensions: FILE_EXTENSIONS.join('/') })}
           </p>
-          <p className="text-xs text-violet-400 dark:text-violet-600 font-mono">
-            Example of file content:<br />
+          <div className="text-xs text-violet-400 dark:text-violet-600 font-mono">
+            {t('upload.exampleLabel')}<br />
             <p className="mt-1 text-xs text-violet-400 dark:text-violet-600 font-mono">
               <span className="font-semibold">type,date_time</span><br />
               <span className="font-semibold">baby-kick,2026-04-27 14:30:00</span><br />
               <span className="font-semibold">contraction-start,2026-04-27 15:30:00</span><br />
               <span className="font-semibold">contraction-end,2026-04-27 15:30:00</span>
             </p>
-          </p>
+          </div>
         </div>
       </div>
 
@@ -104,7 +113,9 @@ export default function CsvUpload({ onData }) {
 
       {warnings.length > 0 && (
         <details className="mt-2 text-xs text-amber-600 dark:text-amber-400">
-          <summary className="cursor-pointer select-none">{warnings.length} row{warnings.length > 1 ? 's' : ''} skipped — click to see details</summary>
+          <summary className="cursor-pointer select-none">
+            {t('upload.warningsToggle', { count: warnings.length })}
+          </summary>
           <ul className="mt-1 space-y-1 pl-4 list-disc">
             {warnings.map((w, i) => <li key={i}>{w}</li>)}
           </ul>

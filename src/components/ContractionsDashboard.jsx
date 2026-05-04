@@ -1,8 +1,10 @@
 import {
-  BarChart, Bar, LineChart, Line, ScatterChart, Scatter,
+  BarChart, Bar, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts'
+import { useTranslation } from 'react-i18next'
 import { processContractions } from '../utils/dataProcessors'
+import { DATE_FNS_LOCALES } from '../i18n'
 import FiveOneOneAlert from './FiveOneOneAlert'
 
 function ChartCard({ title, children }) {
@@ -25,13 +27,17 @@ const tooltipStyle = {
 }
 
 export default function ContractionsDashboard({ events }) {
-  const { contractions, dailyCounts, fiveOneOne } = processContractions(events)
+  const { t, i18n } = useTranslation()
+  const lang = (i18n.resolvedLanguage || 'en').split('-')[0]
+  const dateLocale = DATE_FNS_LOCALES[lang]
+
+  const { contractions, dailyCounts, fiveOneOne } = processContractions(events, dateLocale)
 
   if (contractions.length === 0) {
     return (
       <div className="text-center py-12 text-violet-400 dark:text-violet-600">
         <p className="text-4xl mb-3">🤰</p>
-        <p>No contractions found in this CSV.</p>
+        <p>{t('contractions.empty')}</p>
       </div>
     )
   }
@@ -63,9 +69,9 @@ export default function ContractionsDashboard({ events }) {
       {/* Summary strip */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { label: 'Total', value: totalContractions },
-          { label: 'Avg duration', value: `${avgDuration}s` },
-          { label: 'Avg interval', value: avgInterval != null ? `${avgInterval}m` : '—' },
+          { label: t('contractions.total'), value: totalContractions },
+          { label: t('contractions.avgDuration'), value: `${avgDuration}s` },
+          { label: t('contractions.avgInterval'), value: avgInterval != null ? `${avgInterval}m` : '—' },
         ].map(({ label, value }) => (
           <div key={label} className="rounded-2xl bg-white/60 dark:bg-white/5 backdrop-blur-sm p-4 text-center shadow-sm">
             <p className="text-2xl font-serif font-bold text-pink-600 dark:text-pink-300">{value}</p>
@@ -75,7 +81,7 @@ export default function ContractionsDashboard({ events }) {
       </div>
 
       {/* Daily count */}
-      <ChartCard title="Daily Contraction Count">
+      <ChartCard title={t('contractions.dailyChart')}>
         <ResponsiveContainer width="100%" height={200}>
           <BarChart data={dailyCounts} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
@@ -88,7 +94,7 @@ export default function ContractionsDashboard({ events }) {
       </ChartCard>
 
       {/* Duration per contraction */}
-      <ChartCard title="Duration per Contraction">
+      <ChartCard title={t('contractions.durationChart')}>
         <ResponsiveContainer width="100%" height={200}>
           <BarChart data={durationData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
@@ -96,25 +102,25 @@ export default function ContractionsDashboard({ events }) {
             <YAxis tick={{ fontSize: 11 }} stroke="var(--chart-axis)" unit="s" />
             <Tooltip
               {...tooltipStyle}
-              formatter={(v, _, p) => [p.payload.duration, 'Duration']}
+              formatter={(v, _, p) => [p.payload.duration, t('contractions.durationLabel')]}
             />
             <Bar dataKey="seconds" fill="#f472b6" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
         <p className="text-xs text-center text-violet-400 dark:text-violet-600 mt-2">
-          45s threshold for 5-1-1 rule shown as reference
+          {t('contractions.durationFootnote')}
         </p>
       </ChartCard>
 
       {/* Interval between contractions */}
       {intervalData.length > 0 && (
-        <ChartCard title="Interval Between Contractions (minutes)">
+        <ChartCard title={t('contractions.intervalChart')}>
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={intervalData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
               <XAxis dataKey="label" tick={{ fontSize: 9 }} stroke="var(--chart-axis)" interval="preserveStartEnd" />
               <YAxis tick={{ fontSize: 11 }} stroke="var(--chart-axis)" unit="m" />
-              <Tooltip {...tooltipStyle} formatter={v => [`${v} min`]} />
+              <Tooltip {...tooltipStyle} formatter={v => [t('contractions.minutesUnit', { value: v })]} />
               <Line
                 type="monotone"
                 dataKey="minutes"

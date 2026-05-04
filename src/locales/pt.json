@@ -1,0 +1,63 @@
+{
+  "app": {
+    "title": "Baby Tracker",
+    "subtitle": "Painel de pontapés e contrações",
+    "uploadHint": "Carrega um ficheiro para veres o painel ✨",
+    "privacyNote": "🔒 Sem recolha de dados! 💜"
+  },
+  "language": {
+    "label": "Idioma",
+    "en": "English",
+    "pt": "Português"
+  },
+  "upload": {
+    "title": "Carrega o teu ficheiro de registos",
+    "extensionsHint": "Extensões válidas: {{extensions}}",
+    "exampleLabel": "Exemplo do conteúdo do ficheiro:",
+    "ariaLabel": "Carregar ficheiro CSV",
+    "loaded": "Carregados {{count}} eventos — {{kicks}} pontapés, {{contractions}} contrações.",
+    "errorBadExtension": "Por favor carrega um ficheiro com uma destas extensões: {{extensions}}",
+    "errorNoEvents": "Não foram encontrados eventos válidos no ficheiro.",
+    "warningsToggle_one": "{{count}} linha ignorada — clica para ver detalhes",
+    "warningsToggle_other": "{{count}} linhas ignoradas — clica para ver detalhes"
+  },
+  "tabs": {
+    "kicks": "👶 Pontapés",
+    "contractions": "🤰 Contrações"
+  },
+  "kicks": {
+    "totalKicks": "Total de pontapés",
+    "avgPerDay": "Média por dia",
+    "peakHour": "Hora de pico",
+    "dailyChart": "Pontapés por dia",
+    "byHourChart": "Pontapés por hora do dia",
+    "byPeriodChart": "Pontapés por período do dia",
+    "intervalChart": "Intervalo entre pontapés (minutos)",
+    "minutesUnit": "{{value}} min"
+  },
+  "contractions": {
+    "empty": "Sem contrações registadas neste CSV.",
+    "total": "Total",
+    "avgDuration": "Duração média",
+    "avgInterval": "Intervalo médio",
+    "dailyChart": "Contrações por dia",
+    "durationChart": "Duração por contração",
+    "durationLabel": "Duração",
+    "durationFootnote": "Limiar de 45s da regra 5-1-1 mostrado como referência",
+    "intervalChart": "Intervalo entre contrações (minutos)",
+    "minutesUnit": "{{value}} min"
+  },
+  "periods": {
+    "Night": "Noite",
+    "Morning": "Manhã",
+    "Afternoon": "Tarde",
+    "Evening": "Fim de tarde"
+  },
+  "alert": {
+    "triggered": "Regra 5-1-1 ativada",
+    "triggeredDetail": "{{count}} contrações detectadas numa janela de 1 hora a começar em <strong>{{when}}</strong>, cada uma com ≥45s e ≤5 min entre elas.",
+    "triggeredCta": "Considera contactar o teu profissional de saúde.",
+    "safe": "Regra 5-1-1 — Ainda não ativada",
+    "safeDetail": "Nenhum período detectado com 5+ contrações por hora, cada uma com ≥45s e ≤5 min entre elas."
+  }
+}

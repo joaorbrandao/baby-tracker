@@ -2,7 +2,9 @@ import {
   BarChart, Bar, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell
 } from 'recharts'
+import { useTranslation } from 'react-i18next'
 import { processKicks } from '../utils/dataProcessors'
+import { DATE_FNS_LOCALES } from '../i18n'
 
 const PERIOD_COLORS = {
   Night:     '#818cf8', // indigo-400
@@ -31,7 +33,11 @@ const tooltipStyle = {
 }
 
 export default function KicksDashboard({ events }) {
-  const { dailyCounts, byHour, byPeriod, intervals } = processKicks(events)
+  const { t, i18n } = useTranslation()
+  const lang = (i18n.resolvedLanguage || 'en').split('-')[0]
+  const dateLocale = DATE_FNS_LOCALES[lang]
+
+  const { dailyCounts, byHour, byPeriod, intervals } = processKicks(events, dateLocale)
 
   const totalKicks = dailyCounts.reduce((s, d) => s + d.count, 0)
   const avgPerDay = dailyCounts.length
@@ -44,9 +50,9 @@ export default function KicksDashboard({ events }) {
       {/* Summary strip */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { label: 'Total kicks', value: totalKicks },
-          { label: 'Avg per day', value: avgPerDay },
-          { label: 'Peak hour', value: peakHour?.label ?? '—' },
+          { label: t('kicks.totalKicks'), value: totalKicks },
+          { label: t('kicks.avgPerDay'), value: avgPerDay },
+          { label: t('kicks.peakHour'), value: peakHour?.label ?? '—' },
         ].map(({ label, value }) => (
           <div key={label} className="rounded-2xl bg-white/60 dark:bg-white/5 backdrop-blur-sm p-4 text-center shadow-sm">
             <p className="text-2xl font-serif font-bold text-violet-700 dark:text-violet-300">{value}</p>
@@ -56,7 +62,7 @@ export default function KicksDashboard({ events }) {
       </div>
 
       {/* Daily count */}
-      <ChartCard title="Daily Kick Count">
+      <ChartCard title={t('kicks.dailyChart')}>
         <ResponsiveContainer width="100%" height={200}>
           <BarChart data={dailyCounts} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
@@ -69,13 +75,13 @@ export default function KicksDashboard({ events }) {
       </ChartCard>
 
       {/* By hour */}
-      <ChartCard title="Kicks by Hour of Day">
+      <ChartCard title={t('kicks.byHourChart')}>
         <ResponsiveContainer width="100%" height={200}>
           <BarChart data={byHour} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
             <XAxis dataKey="label" tick={{ fontSize: 9 }} stroke="var(--chart-axis)" interval={3} />
             <YAxis tick={{ fontSize: 11 }} stroke="var(--chart-axis)" />
-            <Tooltip {...tooltipStyle} formatter={(v, _, p) => [v, p.payload.period]} />
+            <Tooltip {...tooltipStyle} formatter={(v, _, p) => [v, t(`periods.${p.payload.period}`)]} />
             <Bar dataKey="count" radius={[4, 4, 0, 0]}>
               {byHour.map((entry, i) => (
                 <Cell key={i} fill={PERIOD_COLORS[entry.period]} />
@@ -87,18 +93,21 @@ export default function KicksDashboard({ events }) {
           {Object.entries(PERIOD_COLORS).map(([period, color]) => (
             <div key={period} className="flex items-center gap-1.5 text-xs text-violet-600 dark:text-violet-400">
               <span className="w-3 h-3 rounded-full inline-block" style={{ background: color }} />
-              {period}
+              {t(`periods.${period}`)}
             </div>
           ))}
         </div>
       </ChartCard>
 
       {/* By period */}
-      <ChartCard title="Kicks by Time of Day">
+      <ChartCard title={t('kicks.byPeriodChart')}>
         <ResponsiveContainer width="100%" height={180}>
-          <BarChart data={byPeriod} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+          <BarChart
+            data={byPeriod.map(p => ({ ...p, periodLabel: t(`periods.${p.period}`) }))}
+            margin={{ top: 4, right: 4, left: -20, bottom: 0 }}
+          >
             <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
-            <XAxis dataKey="period" tick={{ fontSize: 12 }} stroke="var(--chart-axis)" />
+            <XAxis dataKey="periodLabel" tick={{ fontSize: 12 }} stroke="var(--chart-axis)" />
             <YAxis tick={{ fontSize: 11 }} stroke="var(--chart-axis)" />
             <Tooltip {...tooltipStyle} />
             <Bar dataKey="count" radius={[6, 6, 0, 0]}>
@@ -112,13 +121,13 @@ export default function KicksDashboard({ events }) {
 
       {/* Average interval */}
       {intervals.length > 0 && (
-        <ChartCard title="Interval Between Kicks (minutes)">
+        <ChartCard title={t('kicks.intervalChart')}>
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={intervals} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
               <XAxis dataKey="label" tick={{ fontSize: 9 }} stroke="var(--chart-axis)" interval="preserveStartEnd" />
               <YAxis tick={{ fontSize: 11 }} stroke="var(--chart-axis)" />
-              <Tooltip {...tooltipStyle} formatter={v => [`${v} min`]} />
+              <Tooltip {...tooltipStyle} formatter={v => [t('kicks.minutesUnit', { value: v })]} />
               <Line
                 type="monotone"
                 dataKey="minutes"
