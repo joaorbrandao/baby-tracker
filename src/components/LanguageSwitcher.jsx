@@ -16,7 +16,6 @@ export default function LanguageSwitcher() {
 
   return (
     <label className="inline-flex items-center gap-1.5 text-xs text-violet-600 dark:text-violet-400 cursor-pointer">
-      <span aria-hidden>{FLAGS[current] ?? '🌐'}</span>
       <span className="sr-only">{t('language.label')}</span>
       <select
         value={current}
@@ -26,7 +25,7 @@ export default function LanguageSwitcher() {
       >
         {SUPPORTED_LANGUAGES.map(lng => (
           <option key={lng} value={lng}>
-            {t(`language.${lng}`)}
+            {`${FLAGS[lng] ?? '🌐'} ${t(`language.${lng}`)}`}
           </option>
         ))}
       </select>
