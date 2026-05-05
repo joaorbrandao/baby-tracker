@@ -1,12 +1,12 @@
-import { useEffect, useMemo, useState } from 'react'
 import {
   BarChart, Bar, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell
 } from 'recharts'
 import { useTranslation } from 'react-i18next'
-import { format, parseISO } from 'date-fns'
+import { format } from 'date-fns'
 import { processKicks } from '../utils/dataProcessors'
 import { DATE_FNS_LOCALES } from '../i18n'
+import DailyCountChart from './DailyCountChart'
 
 const PERIOD_COLORS = {
   Night:     '#818cf8', // indigo-400
@@ -47,25 +47,27 @@ export default function KicksDashboard({ events }) {
     : 0
   const peakHour = byHour.reduce((a, b) => (b.count > a.count ? b : a), byHour[0])
 
-  const [selectedDate, setSelectedDate] = useState(null)
-
-  useEffect(() => {
-    if (selectedDate && !dailyCounts.some(d => d.date === selectedDate)) {
-      setSelectedDate(null)
-    }
-  }, [dailyCounts, selectedDate])
-
-  const dayByHour = useMemo(() => {
-    if (!selectedDate) return null
+  const renderDrilldown = (selectedDate) => {
     const dayEvents = events.filter(
       e => e.type === 'baby-kick' && format(e.datetime, 'yyyy-MM-dd') === selectedDate
     )
-    return processKicks(dayEvents, dateLocale).byHour
-  }, [events, selectedDate, dateLocale])
-
-  const prettyDate = selectedDate
-    ? format(parseISO(selectedDate), 'PPP', dateLocale ? { locale: dateLocale } : undefined)
-    : ''
+    const dayByHour = processKicks(dayEvents, dateLocale).byHour
+    return (
+      <ResponsiveContainer width="100%" height={200}>
+        <BarChart data={dayByHour} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+          <XAxis dataKey="label" tick={{ fontSize: 9 }} stroke="var(--chart-axis)" interval={3} />
+          <YAxis tick={{ fontSize: 11 }} stroke="var(--chart-axis)" allowDecimals={false} />
+          <Tooltip {...tooltipStyle} formatter={(v, _, p) => [v, t(`periods.${p.payload.period}`)]} />
+          <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+            {dayByHour.map((entry, i) => (
+              <Cell key={i} fill={PERIOD_COLORS[entry.period]} />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    )
+  }
 
   return (
     <div className="space-y-4">
@@ -83,64 +85,13 @@ export default function KicksDashboard({ events }) {
         ))}
       </div>
 
-      {/* Daily count (with drill-down to by-hour for the clicked day) */}
-      <div className="rounded-2xl bg-white/60 dark:bg-white/5 backdrop-blur-sm p-5 shadow-sm">
-        <div className="flex items-start justify-between gap-3 mb-4">
-          <div>
-            <h3 className="font-serif font-semibold text-violet-900 dark:text-violet-200">
-              {selectedDate
-                ? t('kicks.dailyChartForDay', { date: prettyDate })
-                : t('kicks.dailyChart')}
-            </h3>
-            <p className="text-xs text-violet-500 dark:text-violet-400 mt-1">
-              {selectedDate ? t('kicks.drilldownHint') : t('kicks.dailyChartHint')}
-            </p>
-          </div>
-          {selectedDate && (
-            <button
-              type="button"
-              onClick={() => setSelectedDate(null)}
-              className="shrink-0 rounded-full px-3 py-1 text-xs font-medium bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-200 hover:bg-violet-200 dark:hover:bg-violet-900/60 transition-colors"
-            >
-              {t('kicks.backToOverview')}
-            </button>
-          )}
-        </div>
-        {selectedDate ? (
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={dayByHour} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
-              <XAxis dataKey="label" tick={{ fontSize: 9 }} stroke="var(--chart-axis)" interval={3} />
-              <YAxis tick={{ fontSize: 11 }} stroke="var(--chart-axis)" allowDecimals={false} />
-              <Tooltip {...tooltipStyle} formatter={(v, _, p) => [v, t(`periods.${p.payload.period}`)]} />
-              <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                {dayByHour.map((entry, i) => (
-                  <Cell key={i} fill={PERIOD_COLORS[entry.period]} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        ) : (
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={dailyCounts} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
-              <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="var(--chart-axis)" />
-              <YAxis tick={{ fontSize: 11 }} stroke="var(--chart-axis)" />
-              <Tooltip {...tooltipStyle} />
-              <Bar
-                dataKey="count"
-                fill="#7c3aed"
-                radius={[6, 6, 0, 0]}
-                cursor="pointer"
-                onClick={(entry) => {
-                  const date = entry?.payload?.date ?? entry?.date
-                  if (date) setSelectedDate(date)
-                }}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        )}
-      </div>
+      <DailyCountChart
+        dailyCounts={dailyCounts}
+        dateLocale={dateLocale}
+        barColor="#7c3aed"
+        i18nNamespace="kicks"
+        renderDrilldown={renderDrilldown}
+      />
 
       {/* By hour */}
       <ChartCard title={t('kicks.byHourChart')}>
