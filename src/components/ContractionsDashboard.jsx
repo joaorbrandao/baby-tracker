@@ -1,8 +1,10 @@
+import { useEffect, useMemo, useState } from 'react'
 import {
   BarChart, Bar, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts'
 import { useTranslation } from 'react-i18next'
+import { format, parseISO } from 'date-fns'
 import { processContractions } from '../utils/dataProcessors'
 import { DATE_FNS_LOCALES } from '../i18n'
 import FiveOneOneAlert from './FiveOneOneAlert'
@@ -61,6 +63,33 @@ export default function ContractionsDashboard({ events }) {
     .filter(c => c.intervalMin !== null)
     .map(c => ({ label: c.label, minutes: c.intervalMin }))
 
+  const [selectedDate, setSelectedDate] = useState(null)
+
+  useEffect(() => {
+    if (selectedDate && !dailyCounts.some(d => d.date === selectedDate)) {
+      setSelectedDate(null)
+    }
+  }, [dailyCounts, selectedDate])
+
+  const dayByHour = useMemo(() => {
+    if (!selectedDate) return null
+    const counts = Array.from({ length: 24 }, (_, h) => ({
+      hour: h,
+      label: `${String(h).padStart(2, '0')}:00`,
+      count: 0,
+    }))
+    contractions.forEach(c => {
+      if (format(c.start, 'yyyy-MM-dd') === selectedDate) {
+        counts[c.start.getHours()].count += 1
+      }
+    })
+    return counts
+  }, [contractions, selectedDate])
+
+  const prettyDate = selectedDate
+    ? format(parseISO(selectedDate), 'PPP', dateLocale ? { locale: dateLocale } : undefined)
+    : ''
+
   return (
     <div className="space-y-4">
       {/* 5-1-1 alert — always on top */}
@@ -80,18 +109,60 @@ export default function ContractionsDashboard({ events }) {
         ))}
       </div>
 
-      {/* Daily count */}
-      <ChartCard title={t('contractions.dailyChart')}>
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={dailyCounts} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
-            <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="var(--chart-axis)" />
-            <YAxis tick={{ fontSize: 11 }} stroke="var(--chart-axis)" allowDecimals={false} />
-            <Tooltip {...tooltipStyle} />
-            <Bar dataKey="count" fill="#ec4899" radius={[6, 6, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </ChartCard>
+      {/* Daily count (with drill-down to by-hour for the clicked day) */}
+      <div className="rounded-2xl bg-white/60 dark:bg-white/5 backdrop-blur-sm p-5 shadow-sm">
+        <div className="flex items-start justify-between gap-3 mb-4">
+          <div>
+            <h3 className="font-serif font-semibold text-violet-900 dark:text-violet-200">
+              {selectedDate
+                ? t('contractions.dailyChartForDay', { date: prettyDate })
+                : t('contractions.dailyChart')}
+            </h3>
+            <p className="text-xs text-violet-500 dark:text-violet-400 mt-1">
+              {selectedDate ? t('contractions.drilldownHint') : t('contractions.dailyChartHint')}
+            </p>
+          </div>
+          {selectedDate && (
+            <button
+              type="button"
+              onClick={() => setSelectedDate(null)}
+              className="shrink-0 rounded-full px-3 py-1 text-xs font-medium bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-200 hover:bg-violet-200 dark:hover:bg-violet-900/60 transition-colors"
+            >
+              {t('contractions.backToOverview')}
+            </button>
+          )}
+        </div>
+        {selectedDate ? (
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={dayByHour} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+              <XAxis dataKey="label" tick={{ fontSize: 9 }} stroke="var(--chart-axis)" interval={3} />
+              <YAxis tick={{ fontSize: 11 }} stroke="var(--chart-axis)" allowDecimals={false} />
+              <Tooltip {...tooltipStyle} />
+              <Bar dataKey="count" fill="#ec4899" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        ) : (
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={dailyCounts} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+              <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="var(--chart-axis)" />
+              <YAxis tick={{ fontSize: 11 }} stroke="var(--chart-axis)" allowDecimals={false} />
+              <Tooltip {...tooltipStyle} />
+              <Bar
+                dataKey="count"
+                fill="#ec4899"
+                radius={[6, 6, 0, 0]}
+                cursor="pointer"
+                onClick={(entry) => {
+                  const date = entry?.payload?.date ?? entry?.date
+                  if (date) setSelectedDate(date)
+                }}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
+      </div>
 
       {/* Duration per contraction */}
       <ChartCard title={t('contractions.durationChart')}>
