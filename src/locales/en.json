@@ -51,7 +51,7 @@
     "backToOverview": "← Back to all days",
     "durationChart": "Duration per Contraction",
     "durationLabel": "Duration",
-    "durationFootnote": "45s threshold for 5-1-1 rule shown as reference",
+    "durationFootnote": "1 min (60s) threshold for the 5-1-1 rule shown as reference",
     "intervalChart": "Interval Between Contractions (minutes)",
     "minutesUnit": "{{value}} min"
   },
@@ -63,9 +63,9 @@
   },
   "alert": {
     "triggered": "5-1-1 Rule Triggered",
-    "triggeredDetail": "{{count}} contractions detected within a 1-hour window starting <strong>{{when}}</strong>, each lasting ≥45s with ≤5 min between them.",
+    "triggeredDetail": "{{count}} contractions in a row, each lasting ≥1 min with ≤5 min between them, sustained for over an hour starting <strong>{{when}}</strong>.",
     "triggeredCta": "Consider contacting your healthcare provider.",
     "safe": "5-1-1 Rule — Not Yet Triggered",
-    "safeDetail": "No period detected with 5+ contractions/hour, each ≥45s, spaced ≤5 min apart."
+    "safeDetail": "No run of contractions ≥1 min long, ≤5 min apart, sustained for at least an hour."
   }
 }

@@ -51,7 +51,7 @@
     "backToOverview": "← Voltar a todos os dias",
     "durationChart": "Duração por contração",
     "durationLabel": "Duração",
-    "durationFootnote": "Limiar de 45s da regra 5-1-1 mostrado como referência",
+    "durationFootnote": "Limiar de 1 min (60s) da regra 5-1-1 mostrado como referência",
     "intervalChart": "Intervalo entre contrações (minutos)",
     "minutesUnit": "{{value}} min"
   },
@@ -63,9 +63,9 @@
   },
   "alert": {
     "triggered": "Regra 5-1-1 ativada",
-    "triggeredDetail": "{{count}} contrações detectadas numa janela de 1 hora a começar em <strong>{{when}}</strong>, cada uma com ≥45s e ≤5 min entre elas.",
+    "triggeredDetail": "{{count}} contrações seguidas, cada uma com ≥1 min e ≤5 min entre elas, mantidas por mais de uma hora a começar em <strong>{{when}}</strong>.",
     "triggeredCta": "Considera contactar o teu profissional de saúde.",
     "safe": "Regra 5-1-1 — Ainda não ativada",
-    "safeDetail": "Nenhum período detectado com 5+ contrações por hora, cada uma com ≥45s e ≤5 min entre elas."
+    "safeDetail": "Sem sequência de contrações com ≥1 min, ≤5 min entre elas, mantida por pelo menos uma hora."
   }
 }

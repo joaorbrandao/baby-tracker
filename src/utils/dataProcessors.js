@@ -128,7 +128,7 @@ export function processContractions(events, locale = undefined) {
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([date, count]) => ({ date, count }))
 
-  // 5-1-1 rule: in any 60-min window, ≥5 contractions, each ≥45s, intervals ≤5 min
+  // 5-1-1 rule: contractions ≤5 min apart, each ≥1 min long, pattern sustained ≥1 hour
   const fiveOneOne = detect511(paired, fmtOpts)
 
   return { contractions: paired, dailyCounts, fiveOneOne }
@@ -140,32 +140,42 @@ function formatDuration(sec) {
 }
 
 /**
- * Detect 5-1-1 rule: any window of 1 hour containing ≥5 contractions
- * where each is ≥45s long and intervals between them are ≤5 min.
+ * Detect 5-1-1 rule: a run of consecutive contractions where each lasts ≥1 min,
+ * each is ≤5 min apart (start-to-start), and the run spans ≥1 hour.
  */
 function detect511(contractions, fmtOpts = undefined) {
-  for (let i = 0; i < contractions.length; i++) {
-    const windowStart = contractions[i].start
-    const windowEnd = new Date(windowStart.getTime() + 60 * 60 * 1000)
-
-    const inWindow = contractions.filter(
-      c => c.start >= windowStart && c.start <= windowEnd
-    )
-
-    if (inWindow.length < 5) continue
-
-    const allLongEnough = inWindow.every(c => c.durationSec >= 45)
-    if (!allLongEnough) continue
-
-    const allCloseEnough = inWindow.slice(1).every(c => c.intervalMin !== null && c.intervalMin <= 5)
-    if (!allCloseEnough) continue
-
-    return {
-      triggered: true,
-      at: inWindow[0].start,
-      label: format(inWindow[0].start, 'MMM d, yyyy HH:mm', fmtOpts),
-      count: inWindow.length,
+  let i = 0
+  while (i < contractions.length) {
+    if (contractions[i].durationSec < 60) {
+      i++
+      continue
     }
+
+    let j = i + 1
+    while (
+      j < contractions.length &&
+      contractions[j].durationSec >= 60 &&
+      contractions[j].intervalMin !== null &&
+      contractions[j].intervalMin <= 5
+    ) {
+      j++
+    }
+
+    const runLength = j - i
+    if (runLength >= 2) {
+      const spanMin = differenceInMinutes(contractions[j - 1].start, contractions[i].start)
+      if (spanMin >= 60) {
+        return {
+          triggered: true,
+          at: contractions[i].start,
+          label: format(contractions[i].start, 'MMM d, yyyy HH:mm', fmtOpts),
+          count: runLength,
+        }
+      }
+    }
+
+    // Skip forward: the contraction that broke the run may itself start a new run.
+    i = Math.max(j, i + 1)
   }
 
   return { triggered: false }
