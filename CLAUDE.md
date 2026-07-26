@@ -1,36 +1,103 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code when working with code in this repository.
 
 ## Commands
 
-- `npm run dev` — start Vite dev server
-- `npm run build` — production build to `dist/` (deployed to GitHub Pages by `.github/workflows/deploy.yml` on push to `main`)
-- `npm run preview` — serve the built bundle
-
-There is no test runner, linter, or formatter configured. The `test/` directory contains sample CSV/MD input files (fixtures for manual testing), not automated tests.
+- `npm run dev` — start Vite dev server + NestJS dev server concurrently
+- `npm run dev:client` — start only the Vite dev server
+- `npm run dev:server` — start only the NestJS dev server
+- `npm run build` — production build of client, server, and utility scripts
+- `npm run start` — start the compiled NestJS server (`server/dist/main.js`)
+- `npm run preview` — serve the built client bundle via Vite (does not start the API)
+- `npm test` — run all client (Vitest) and server (Jest) tests
+- `npx vitest run <path>` — run a single client test file
+- `npx prisma migrate dev --schema server/prisma/schema.prisma` — run dev migrations
+- `npm run create-user -w server -- <email> <password> [name]` — create a user locally
+- `docker compose up -d --wait` — build and start the Docker container
+- `docker exec -it baby-tracker-app-1 node server/dist/scripts/create-user.js <email> <password> [name]` — create a user inside the container
 
 ## Architecture
 
-A client-only PWA (no backend) that visualizes a CSV of baby-kick and contraction timestamps. Data never leaves the browser.
+Fullstack monorepo with a React PWA frontend and a NestJS + SQLite backend.
 
-### Data flow
+```
+root/
+├── client/   # Vite React app
+└── server/   # NestJS API + Prisma
+```
 
-1. **Capture** — `scripts/scriptable/*.js` are iOS Scriptable scripts that append rows (`type,date_time`) to a CSV in iCloud Drive. The three event types are `baby-kick`, `contraction-start`, `contraction-end`.
-2. **Upload** — `src/components/CsvUpload.jsx` accepts `.csv`/`.txt`/`.md` via drag-drop or file picker and hands the file to `parseCsv`.
-3. **Parse** — `src/utils/csvParser.js` (PapaParse) requires `type` and `date_time` columns, validates each row's type against the allowlist, parses `date_time` as **local time** (replaces space with `T` to avoid UTC interpretation), sorts ascending, and returns `{ events, warnings }`.
-4. **Process** — `src/utils/dataProcessors.js` derives all metrics:
-   - `processKicks`: daily counts, by-hour, by-period (Night/Morning/Afternoon/Evening), inter-kick intervals (drops gaps >24h as separate sessions).
-   - `processContractions`: pairs each `contraction-start` with the *next* `contraction-end` (one-pass with an end-index pointer), computes durations and start-to-start intervals, and runs `detect511` (5-1-1 rule: ≥5 contractions in any 60-min window, each ≥45s, intervals ≤5 min).
-5. **Render** — `Dashboard` switches between `KicksDashboard` and `ContractionsDashboard` (Recharts). `FiveOneOneAlert` surfaces 5-1-1 detection.
+**Frontend entry:** `client/src/main.jsx` → `App.jsx` → `Dashboard` → `KicksDashboard` / `ContractionsDashboard` / `FeedDashboard` / `PumpDashboard` / `DiaperDashboard` / `SleepDashboard`
 
-State lives entirely in `App.jsx` (`events` set once after upload). No router, no global store.
+**Backend entry:** `server/src/main.ts` → `AppModule` → `/api` routes
 
-### i18n
+**Data flow:**
+1. User taps a button in `client/src/components/TrackPanel.jsx`
+2. Frontend posts to `POST /api/events` with ISO 8601 UTC datetime
+3. Backend stores the event in SQLite (user-scoped)
+4. Frontend refreshes / appends events and passes them to `processKicks` / `processContractions` / `processFeed` / `processPump` / `processDiaper` / `processSleep`
+5. Dashboards render charts with Recharts
 
-`src/i18n.js` initializes i18next with `en` and `pt` (`nonExplicitSupportedLngs: true` so `pt-PT`/`pt-BR` map to `pt`); language preference persists in `localStorage` under `babytracker-lang`. Translations live in `src/locales/{en,pt}.json`. Date-fns locales are exported as `DATE_FNS_LOCALES` and passed into `processKicks`/`processContractions` so chart labels match the UI language — when adding new date-formatted strings in processors, thread the `locale` argument through.
+**State:**
+- Auth state (JWT + user) lives in `client/src/auth/AuthContext.jsx` and persists in `localStorage` (`babytracker-token`, `babytracker-user`)
+- Event state lives in `client/src/App.jsx` as a single `useState`
+- No global store, no router
 
-### Build / deploy specifics
+## Data flow details
 
-- `vite.config.js` sets `base: '/baby-tracker/'` and configures `vite-plugin-pwa` (autoUpdate, scope `/baby-tracker/`). Any path/asset assumptions must respect this base.
-- Styling is Tailwind (`tailwind.config.js`) with CSS variables `--bg`/`--text` for theme colors and a violet/mauve palette; dark mode via the `dark:` variant.
+- **Capture:** the user taps a tracking button in the browser. Each button maps to a `type` from the allowlisted event types.
+- **Store:** `client/src/api/client.js` sends the event to the backend with a Bearer token. `server/src/events/events.service.ts` validates the type and stores the row.
+- **Process:** dashboards receive `{ type, datetime: Date, sides? }` arrays and run the same processor functions as before. Datetime is always sent as UTC ISO 8601 from the client, stored as UTC, and returned as UTC; the UI rehydrates with `new Date(...)` for local-time rendering.
+
+## Valid event types
+
+| Type | Extra column |
+|---|---|
+| `baby-kick` | — |
+| `contraction-start`, `contraction-end` | — |
+| `feed-breastfeed`, `feed-bottle`, `feed-solids`, `feed-combo` | — |
+| `pump-start`, `pump-end` | `sides` (`left`, `right`, `both`) on `pump-start` |
+| `diaper-wet`, `diaper-dirty`, `diaper-dry` | — |
+| `sleep-start`, `sleep-end` | — |
+
+When adding a new type, update:
+- `server/src/events/constants.ts`
+- `server/src/events/dto/create-event.dto.ts`
+- `client/src/components/TrackPanel.jsx`
+- both `client/src/locales/{en,pt}.json` (`track.<type>` key)
+
+## Key behaviors (hard-earned)
+
+- **Datetime handling:** the UI sends `new Date().toISOString()` to the API. The API stores the value in a SQLite `DateTime` column and returns UTC ISO strings. The frontend rehydrates with `new Date(isoString)` so existing processor logic and local-time rendering stay unchanged.
+- **Contraction pairing:** one-pass end-index pointer matches each `contraction-start` to the next `contraction-end`; unmatched starts/ends are silently dropped.
+- **5-1-1 detection:** ≥2 contractions with duration ≥60s, intervals ≤5min, span ≥60min.
+- **Inter-kick intervals >24h** are treated as separate sessions and dropped from interval calculation.
+- **Pump pairing:** same one-pass end-index pointer as contractions; `sides` is read from the `pump-start` row.
+- **Sleep daily totals:** total hours per day are rounded to one decimal place.
+
+## i18n
+
+- `en` and `pt`; `nonExplicitSupportedLngs: true` so `pt-PT`/`pt-BR` map to `pt`.
+- Language persists in `localStorage` key `babytracker-lang`.
+- Date-fns locales exported as `DATE_FNS_LOCALES`; thread `locale` into processor functions when adding new date-formatted strings.
+- Translations live in `client/src/locales/{en,pt}.json`. Keep both files in sync.
+
+## Build / deploy specifics
+
+- `client/vite.config.js` sets `base: '/'` and proxies `/api` to `http://localhost:3000` in dev.
+- PWA scope `/` with `autoUpdate`.
+- Styling is Tailwind (`client/tailwind.config.js`) with CSS variables `--bg`/`--text` for theme colors and a violet/mauve palette; dark mode via the `dark:` variant.
+- NestJS serves the built client from `client/dist` via `@nestjs/serve-static`; the API is mounted under `/api`.
+- The Docker image is a single all-in-one container. SQLite requires a single instance; do not horizontally scale without switching to a client-server database.
+- GitHub Pages deploy has been removed; CI runs build + test via `.github/workflows/ci.yml`.
+
+## Testing
+
+- Vitest is configured for the client; tests live next to the code they cover (e.g., `client/src/utils/dataProcessors.test.js`).
+- Jest is configured for the server; tests live next to the code they cover (e.g., `server/src/events/events.service.spec.ts`).
+- Shared fixtures are in `client/test/`.
+
+## Also see
+
+- `AGENTS.md` — agent-focused commands, architecture, and hard-earned behaviors
+- `README.md` — user-facing setup and deployment guide
