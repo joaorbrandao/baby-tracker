@@ -2,24 +2,53 @@
   "app": {
     "title": "Baby Tracker",
     "subtitle": "Track kicks, contractions, feeds, pumps, diapers & sleep",
-    "uploadHint": "Upload a file to see your dashboard ✨",
-    "privacyNote": "🔒 No data collection! 💜"
+    "trackHint": "Track events to see your dashboard ✨",
+    "loading": "Loading...",
+    "privacyNote": "🔒 Your data stays on your server 💜"
   },
   "language": {
     "label": "Language",
     "en": "English",
     "pt": "Português"
   },
-  "upload": {
-    "title": "Upload your tracking file",
-    "extensionsHint": "Valid file extensions: {{extensions}}",
-    "exampleLabel": "Example of file content:",
-    "ariaLabel": "Upload CSV file",
-    "loaded": "Loaded {{count}} events — {{kicks}} kicks, {{contractions}} contractions, {{feeds}} feeds, {{diapers}} diapers, {{pumps}} pumps, {{sleep}} sleep.",
-    "errorBadExtension": "Please upload a file with one of the following extensions: {{extensions}}",
-    "errorNoEvents": "No valid events found in the file.",
-    "warningsToggle_one": "{{count}} row skipped — click to see details",
-    "warningsToggle_other": "{{count}} rows skipped — click to see details"
+  "login": {
+    "title": "Sign in",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign in",
+    "signingIn": "Signing in...",
+    "logout": "Log out",
+    "error": "Could not sign in. Please check your credentials."
+  },
+  "track": {
+    "title": "Track",
+    "saved": "Recorded {{type}}",
+    "undone": "Undo successful",
+    "undo": "Undo",
+    "feedTitle": "Feed",
+    "pumpTitle": "Pump",
+    "diaperTitle": "Diaper",
+    "pump": {
+      "start": "Start",
+      "end": "End",
+      "left": "Left",
+      "right": "Right",
+      "both": "Both"
+    },
+    "baby-kick": "Kick",
+    "contraction-start": "Contraction start",
+    "contraction-end": "Contraction end",
+    "feed-breastfeed": "Breastfeed",
+    "feed-bottle": "Bottle",
+    "feed-solids": "Solids",
+    "feed-combo": "Combo",
+    "pump-start": "Pump start",
+    "pump-end": "Pump end",
+    "diaper-wet": "Wet",
+    "diaper-dirty": "Dirty",
+    "diaper-dry": "Dry",
+    "sleep-start": "Sleep start",
+    "sleep-end": "Sleep end"
   },
   "tabs": {
     "kicks": "👶 Baby Kicks",
@@ -46,7 +75,7 @@
     "minutesUnit": "{{value}} min"
   },
   "contractions": {
-    "empty": "No contractions found in this CSV.",
+    "empty": "No contractions recorded yet.",
     "total": "Total",
     "avgDuration": "Avg duration",
     "avgInterval": "Avg interval",
@@ -64,7 +93,7 @@
     "minutesUnit": "{{value}} min"
   },
   "feed": {
-    "empty": "No feed events found in this CSV.",
+    "empty": "No feed events recorded yet.",
     "total": "Total feeds",
     "totalToday": "Today",
     "mostCommon": "Most common",
@@ -84,7 +113,7 @@
     "combo": "Combo"
   },
   "pump": {
-    "empty": "No pump sessions found in this CSV.",
+    "empty": "No pump sessions recorded yet.",
     "total": "Total sessions",
     "avgDuration": "Avg duration",
     "bySide": "By side",
@@ -104,7 +133,7 @@
     "side_both": "Both"
   },
   "diaper": {
-    "empty": "No diaper changes found in this CSV.",
+    "empty": "No diaper changes recorded yet.",
     "total": "Total changes",
     "wetCount": "Wet",
     "dirtyCount": "Dirty",
@@ -124,7 +153,7 @@
     "dry": "Dry"
   },
   "sleep": {
-    "empty": "No sleep sessions found in this CSV.",
+    "empty": "No sleep sessions recorded yet.",
     "total": "Total sessions",
     "avgDuration": "Avg duration",
     "totalToday": "Total today",

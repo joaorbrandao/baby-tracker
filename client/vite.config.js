@@ -3,7 +3,15 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  base: '/baby-tracker/',
+  base: '/',
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+    },
+  },
   plugins: [
     react(),
     VitePWA({
@@ -16,8 +24,8 @@ export default defineConfig({
         theme_color: '#7c3aed',
         background_color: '#1e1b4b',
         display: 'standalone',
-        scope: '/baby-tracker/',
-        start_url: '/baby-tracker/',
+        scope: '/',
+        start_url: '/',
         icons: [
           {
             src: 'icons/icon-192.png',

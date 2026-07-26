@@ -2,24 +2,53 @@
   "app": {
     "title": "Baby Tracker",
     "subtitle": "Regista pontapés, contrações, alimentação, extração, fraldas e sono",
-    "uploadHint": "Carrega um ficheiro para veres o painel ✨",
-    "privacyNote": "🔒 Sem recolha de dados! 💜"
+    "trackHint": "Regista eventos para veres o painel ✨",
+    "loading": "A carregar...",
+    "privacyNote": "🔒 Os teus dados ficam no teu servidor 💜"
   },
   "language": {
     "label": "Idioma",
     "en": "English",
     "pt": "Português"
   },
-  "upload": {
-    "title": "Carrega o teu ficheiro de registos",
-    "extensionsHint": "Extensões válidas: {{extensions}}",
-    "exampleLabel": "Exemplo do conteúdo do ficheiro:",
-    "ariaLabel": "Carregar ficheiro CSV",
-    "loaded": "Carregados {{count}} eventos — {{kicks}} pontapés, {{contractions}} contrações, {{feeds}} alimentações, {{diapers}} fraldas, {{pumps}} extrações, {{sleep}} sonos.",
-    "errorBadExtension": "Por favor carrega um ficheiro com uma destas extensões: {{extensions}}",
-    "errorNoEvents": "Não foram encontrados eventos válidos no ficheiro.",
-    "warningsToggle_one": "{{count}} linha ignorada — clica para ver detalhes",
-    "warningsToggle_other": "{{count}} linhas ignoradas — clica para ver detalhes"
+  "login": {
+    "title": "Iniciar sessão",
+    "email": "Email",
+    "password": "Palavra-passe",
+    "submit": "Entrar",
+    "signingIn": "A entrar...",
+    "logout": "Sair",
+    "error": "Não foi possível iniciar sessão. Verifica as tuas credenciais."
+  },
+  "track": {
+    "title": "Registar",
+    "saved": "Registado: {{type}}",
+    "undone": "Anulação efetuada",
+    "undo": "Anular",
+    "feedTitle": "Alimentação",
+    "pumpTitle": "Extração",
+    "diaperTitle": "Fraldas",
+    "pump": {
+      "start": "Início",
+      "end": "Fim",
+      "left": "Esquerdo",
+      "right": "Direito",
+      "both": "Ambos"
+    },
+    "baby-kick": "Pontapé",
+    "contraction-start": "Início de contração",
+    "contraction-end": "Fim de contração",
+    "feed-breastfeed": "Peito",
+    "feed-bottle": "Biberão",
+    "feed-solids": "Sólidos",
+    "feed-combo": "Misto",
+    "pump-start": "Início de extração",
+    "pump-end": "Fim de extração",
+    "diaper-wet": "Molhada",
+    "diaper-dirty": "Suja",
+    "diaper-dry": "Seca",
+    "sleep-start": "Início de sono",
+    "sleep-end": "Fim de sono"
   },
   "tabs": {
     "kicks": "👶 Pontapés",
@@ -46,7 +75,7 @@
     "minutesUnit": "{{value}} min"
   },
   "contractions": {
-    "empty": "Sem contrações registadas neste CSV.",
+    "empty": "Sem contrações registadas.",
     "total": "Total",
     "avgDuration": "Duração média",
     "avgInterval": "Intervalo médio",
@@ -64,7 +93,7 @@
     "minutesUnit": "{{value}} min"
   },
   "feed": {
-    "empty": "Sem eventos de alimentação registados neste CSV.",
+    "empty": "Sem eventos de alimentação registados.",
     "total": "Total de alimentações",
     "totalToday": "Hoje",
     "mostCommon": "Mais comum",
@@ -84,7 +113,7 @@
     "combo": "Misto"
   },
   "pump": {
-    "empty": "Sem sessões de extração registadas neste CSV.",
+    "empty": "Sem sessões de extração registadas.",
     "total": "Total de sessões",
     "avgDuration": "Duração média",
     "bySide": "Por lado",
@@ -104,7 +133,7 @@
     "side_both": "Ambos"
   },
   "diaper": {
-    "empty": "Sem mudanças de fralda registadas neste CSV.",
+    "empty": "Sem mudanças de fralda registadas.",
     "total": "Total de mudanças",
     "wetCount": "Molhada",
     "dirtyCount": "Suja",
@@ -124,7 +153,7 @@
     "dry": "Seca"
   },
   "sleep": {
-    "empty": "Sem sessões de sono registadas neste CSV.",
+    "empty": "Sem sessões de sono registadas.",
     "total": "Total de sessões",
     "avgDuration": "Duração média",
     "totalToday": "Total hoje",
