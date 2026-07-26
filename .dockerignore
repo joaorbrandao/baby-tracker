@@ -1,0 +1,14 @@
+node_modules
+dist
+.git
+.github
+.env
+.env.*
+*.db
+data
+server/dev.db
+client/dist
+.opencode
+assets
+scripts
+*.md
