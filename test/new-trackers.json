@@ -1,0 +1,89 @@
+{
+  "description": "Sample events and expected outputs for feed, pump, diaper, and sleep trackers.",
+  "events": [
+    { "type": "feed-breastfeed", "datetime": "2026-04-27 08:00:00" },
+    { "type": "feed-bottle", "datetime": "2026-04-27 14:00:00" },
+    { "type": "feed-solids", "datetime": "2026-04-27 18:30:00" },
+    { "type": "feed-combo", "datetime": "2026-04-27 22:00:00" },
+    { "type": "feed-breastfeed", "datetime": "2026-04-28 07:00:00" },
+    { "type": "pump-start", "datetime": "2026-04-27 09:00:00", "sides": "left" },
+    { "type": "pump-end", "datetime": "2026-04-27 09:15:00" },
+    { "type": "pump-start", "datetime": "2026-04-27 21:00:00", "sides": "both" },
+    { "type": "pump-end", "datetime": "2026-04-27 21:25:00" },
+    { "type": "pump-start", "datetime": "2026-04-28 10:00:00", "sides": "right" },
+    { "type": "pump-end", "datetime": "2026-04-28 10:10:00" },
+    { "type": "diaper-wet", "datetime": "2026-04-27 06:00:00" },
+    { "type": "diaper-dirty", "datetime": "2026-04-27 12:00:00" },
+    { "type": "diaper-dry", "datetime": "2026-04-27 18:00:00" },
+    { "type": "diaper-wet", "datetime": "2026-04-28 08:00:00" },
+    { "type": "sleep-start", "datetime": "2026-04-27 20:00:00" },
+    { "type": "sleep-end", "datetime": "2026-04-27 22:30:00" },
+    { "type": "sleep-start", "datetime": "2026-04-28 13:00:00" },
+    { "type": "sleep-end", "datetime": "2026-04-28 14:15:00" }
+  ],
+  "expected": {
+    "feed": {
+      "totalFeeds": 5,
+      "dailyCounts": [
+        { "date": "2026-04-27", "count": 4 },
+        { "date": "2026-04-28", "count": 1 }
+      ],
+      "byType": {
+        "breastfeed": 2,
+        "bottle": 1,
+        "solids": 1,
+        "combo": 1
+      },
+      "byHour": {
+        "7": 1,
+        "8": 1,
+        "14": 1,
+        "18": 1,
+        "22": 1
+      }
+    },
+    "pump": {
+      "totalSessions": 3,
+      "dailyCounts": [
+        { "date": "2026-04-27", "count": 2 },
+        { "date": "2026-04-28", "count": 1 }
+      ],
+      "bySide": {
+        "left": 1,
+        "right": 1,
+        "both": 1
+      },
+      "durations": [900, 1500, 600]
+    },
+    "diaper": {
+      "totalChanges": 4,
+      "dailyCounts": [
+        { "date": "2026-04-27", "count": 3 },
+        { "date": "2026-04-28", "count": 1 }
+      ],
+      "byType": {
+        "wet": 2,
+        "dirty": 1,
+        "dry": 1
+      },
+      "byHour": {
+        "6": 1,
+        "8": 1,
+        "12": 1,
+        "18": 1
+      }
+    },
+    "sleep": {
+      "totalSessions": 2,
+      "dailyCounts": [
+        { "date": "2026-04-27", "count": 1 },
+        { "date": "2026-04-28", "count": 1 }
+      ],
+      "dailyHours": {
+        "2026-04-27": 2.5,
+        "2026-04-28": 1.3
+      },
+      "durations": [9000, 4500]
+    }
+  }
+}

@@ -31,12 +31,20 @@ export default function CsvUpload({ onData }) {
       }
       const kickCount = events.filter(e => e.type === 'baby-kick').length
       const contractionCount = events.filter(e => e.type === 'contraction-start').length
+      const feedCount = events.filter(e => e.type.startsWith('feed-')).length
+      const pumpCount = events.filter(e => e.type.startsWith('pump-')).length
+      const diaperCount = events.filter(e => e.type.startsWith('diaper-')).length
+      const sleepCount = events.filter(e => e.type.startsWith('sleep-')).length
       setStatus({
         type: w.length > 0 ? 'warning' : 'success',
         message: t('upload.loaded', {
           count: events.length,
           kicks: kickCount,
           contractions: contractionCount,
+          feeds: feedCount,
+          diapers: diaperCount,
+          pumps: pumpCount,
+          sleep: sleepCount,
         }),
       })
       onData(events)
@@ -90,10 +98,12 @@ export default function CsvUpload({ onData }) {
           <div className="text-xs text-violet-400 dark:text-violet-600 font-mono">
             {t('upload.exampleLabel')}<br />
             <p className="mt-1 text-xs text-violet-400 dark:text-violet-600 font-mono">
-              <span className="font-semibold">type,date_time</span><br />
+              <span className="font-semibold">type,date_time</span><span className="text-violet-300 dark:text-violet-700">[,sides]</span><br />
               <span className="font-semibold">baby-kick,2026-04-27 14:30:00</span><br />
               <span className="font-semibold">contraction-start,2026-04-27 15:30:00</span><br />
-              <span className="font-semibold">contraction-end,2026-04-27 15:30:00</span>
+              <span className="font-semibold">contraction-end,2026-04-27 15:30:00</span><br />
+              <span className="font-semibold">feed-breastfeed,2026-04-27 08:15:00</span><br />
+              <span className="font-semibold">diaper-wet,2026-04-27 08:30:00</span>
             </p>
           </div>
         </div>
