@@ -20,6 +20,14 @@
     "logout": "Log out",
     "error": "Could not sign in. Please check your credentials."
   },
+  "account": {
+    "delete": "Delete account",
+    "deleteWarning": "This will permanently delete your account and all tracking data.",
+    "confirmDelete": "Confirm deletion",
+    "deleting": "Deleting...",
+    "cancel": "Cancel",
+    "deleteError": "Could not delete account. Please try again."
+  },
   "track": {
     "title": "Track",
     "saved": "Recorded {{type}}",

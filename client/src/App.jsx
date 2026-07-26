@@ -3,6 +3,7 @@ import { Trans, useTranslation } from 'react-i18next'
 import { api } from './api/client'
 import { useAuth } from './auth/AuthContext'
 import Dashboard from './components/Dashboard'
+import DeleteAccount from './components/DeleteAccount'
 import LanguageSwitcher from './components/LanguageSwitcher'
 import Login from './components/Login'
 import TrackPanel from './components/TrackPanel'
@@ -52,12 +53,15 @@ export default function App() {
         <div className="flex justify-between items-center mb-2">
           <LanguageSwitcher />
           {isAuthenticated && (
-            <button
-              onClick={logout}
-              className="text-sm text-violet-600 dark:text-violet-400 hover:text-violet-800 dark:hover:text-violet-200 underline"
-            >
-              {t('login.logout')}
-            </button>
+            <div className="flex flex-col items-end gap-1">
+              <button
+                onClick={logout}
+                className="text-sm text-violet-600 dark:text-violet-400 hover:text-violet-800 dark:hover:text-violet-200 underline"
+              >
+                {t('login.logout')}
+              </button>
+              <DeleteAccount />
+            </div>
           )}
         </div>
         <div className="text-center">

@@ -20,6 +20,14 @@
     "logout": "Sair",
     "error": "Não foi possível iniciar sessão. Verifica as tuas credenciais."
   },
+  "account": {
+    "delete": "Eliminar conta",
+    "deleteWarning": "Isto vai eliminar permanentemente a tua conta e todos os dados registados.",
+    "confirmDelete": "Confirmar eliminação",
+    "deleting": "A eliminar...",
+    "cancel": "Cancelar",
+    "deleteError": "Não foi possível eliminar a conta. Tenta novamente."
+  },
   "track": {
     "title": "Registar",
     "saved": "Registado: {{type}}",

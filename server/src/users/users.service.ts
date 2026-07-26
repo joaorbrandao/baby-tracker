@@ -15,4 +15,10 @@ export class UsersService {
       select: { id: true, email: true, name: true, createdAt: true },
     })
   }
+
+  async deleteUser(id: string) {
+    return this.prisma.user.delete({
+      where: { id },
+    })
+  }
 }
